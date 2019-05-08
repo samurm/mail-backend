@@ -1,14 +1,14 @@
-import { Controller, Get, Body, Res, Post, Put, Delete } from '@nestjs/common';
+import { Controller, Body, Res, Post, Put, Delete } from '@nestjs/common';
 import * as mailgun from 'mailgun-js';
+import { ListExample } from './list.dto';
 
 @Controller('list')
 export class ListController {
 
     @Post('read')
-    readList(@Body() body, @Res() res): void {
-      console.log(body);
+    async readList(@Body() listExample: ListExample, @Res() res): Promise<any> {
       const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});
-      const list = mg.lists(body.listName);
+      const list = mg.lists(listExample.listName);
 
       list.info((err, data) => {
         res.status(400).json(data);
