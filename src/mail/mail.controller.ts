@@ -1,16 +1,13 @@
 import { Controller, Get, Post, Body, Res } from '@nestjs/common';
 import * as mailgun from 'mailgun-js';
+import * as path from 'path';
 
 @Controller('mail')
 export class MailController {
 
   @Post('send')
   sendMail(@Body() body, @Res() res): void {
-    const key = body.key;
-    const myDomain = body.domain;
-    // const key = 'pubkey-2d4cc3835b7b2de07fece7dfba1d8102';
-    // const DOMAIN = 'sandboxfb738172d6c04c978af0b294e45e3da6.mailgun.org';
-    const mg = mailgun({apiKey: key, domain: myDomain});
+    const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});
     const mail = {
       from: 'me@samples.mailgun.org',
       to: 'samu97rm@gmail.com',
@@ -23,18 +20,34 @@ export class MailController {
     });
   }
 
+  @Post('path')
+  sendMailPath(@Body() body, @Res() res): void {
+    const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});  
+    const filepath = path.join(__dirname, 'mailgun_logo.png');
+    const mail = {
+      from: 'Excited User <me@samples.mailgun.org>',
+      to: 'samu97rm@gmail.com',
+      subject: 'Hello',
+      text: 'Testing some Mailgun awesomeness!',
+      attachment: filepath
+    };
+    
+    mg.messages().send(mail, function (error, data) {
+      res.status(400).json(data);
+    });
+  }
+
   @Post('validate')
   validateMail(@Body() body, @Res() res): void {
-    const key = body.key;
-    const myDomain = body.domain;
-    const mg = mailgun({apiKey: key, domain: myDomain});
+    const mg = mailgun({apiKey: process.env.PUB_KEY, domain: process.env.DOMAIN});
     const mail = body.mail;
 
     mg.validate(mail, (err, data) => {
       if (data && data.is_valid) {
         res.status(400).send(true);
+      }else{
+        res.status(200).send(false);
       }
-      res.status(200).send(false);
     });
   }
 }
