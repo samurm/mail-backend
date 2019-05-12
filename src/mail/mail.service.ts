@@ -1,4 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class MailService {}
+export class MailService {
+    constructor() {}
+    hola() {
+        console.log('hola');
+    }
+}
