@@ -36,7 +36,7 @@ export class MailController {
       subject: 'Hello',
       text: 'Testing some Mailgun awesomeness!',
       attachment: filepath,
-      html: parseHtml(nombreTemplate, variables);
+      // html: parseHtml(nombreTemplate, variables);
     };
 
     mg.messages().send(mail, (error, data) => {

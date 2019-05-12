@@ -5,13 +5,15 @@ import { ListExample } from './list.dto';
 @Controller('list')
 export class ListController {
 
-    @Post('read/:list')
+    @Post('read')
     readList(@Body(new ValidationPipe()) listExample: ListExample, @Res() res): void {
       const mg = mailgun({ apiKey: process.env.KEY, domain: process.env.DOMAIN });
       const list = mg.lists(listExample.listName);
 
-      list.info((err, data) => {
-        res.status(400).json(data);
+      list.info().then(data => {
+        res.status(200).json(data);
+      }, err => {
+        res.status(400).json(err);
       });
     }
 
