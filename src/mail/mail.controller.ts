@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Res } from '@nestjs/common';
 import * as mailgun from 'mailgun-js';
 import * as path from 'path';
-import { MailService } from './mail.service';
+import { MailService } from '../services/mail.service';
 
 @Controller('mail')
 export class MailController {
@@ -18,8 +18,6 @@ export class MailController {
       subject: 'Hello',
       text: 'Testing some Mailgun awesomness!',
     };
-
-    this.mailService.hola();
 
     mg.messages().send(mail, (error, data) => {
       res.status(400).json(data);

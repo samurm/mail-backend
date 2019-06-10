@@ -1,34 +1,26 @@
 import { Controller, Body, Res, Post, Put, Delete, ValidationPipe } from '@nestjs/common';
 import * as mailgun from 'mailgun-js';
-import { ListExample } from './list.dto';
+import { ListName } from '../dto/list.dto';
+import { CreateMember } from '../dto/createMember.dto';
+import { MailService } from '../services/mail.service';
 
 @Controller('list')
 export class ListController {
+    constructor(private mailService: MailService) {
+
+    }
 
     @Post('read')
-    readList(@Body(new ValidationPipe()) listExample: ListExample, @Res() res): void {
-      const mg = mailgun({ apiKey: process.env.KEY, domain: process.env.DOMAIN });
-      const list = mg.lists(listExample.listName);
-
-      list.info().then(data => {
-        res.status(200).json(data);
-      }, err => {
-        res.status(400).json(err);
-      });
+    readList(@Body(new ValidationPipe()) listName: ListName, @Res() res): void {
+      this.mailService.readList(listName, res);
     }
 
-    @Post('create')
-    createMember(@Body() body, @Res() res): void {
-      const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});
-      const list = mg.lists(body.listName);
-      const member = JSON.parse(body.member);
-
-      list.members().create(member, (err, data) => {
-        res.status(400).json(data);
-      });
+    @Post('member/create')
+    createMember(@Body(new ValidationPipe()) createMember: CreateMember, @Res() res): void {
+      this.mailService.createMember(createMember, res);
     }
 
-    @Post('add')
+    @Post('member/list')
     addMembers(@Body() body, @Res() res): void {
       const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});
       const list = mg.lists(body.listName);
@@ -39,7 +31,7 @@ export class ListController {
       });
     }
 
-    @Post('members')
+    @Post('member/read')
     readMembers(@Body() body, @Res() res): void {
       const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});
       const list = mg.lists(body.listName);
