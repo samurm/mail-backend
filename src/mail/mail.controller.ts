@@ -23,24 +23,6 @@ export class MailController {
     this.mailService.sendMultipleMail(mailMultiple, res);
   }
 
-  @Post('send/path')
-  sendMailPath(@Body() body, @Res() res): void {
-    const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});
-    const filepath = path.join(__dirname, 'mailgun_logo.png');
-    const mail = {
-      from: 'Excited User <me@samples.mailgun.org>',
-      to: 'samu97rm@gmail.com',
-      subject: 'Hello',
-      text: 'Testing some Mailgun awesomeness!',
-      attachment: filepath,
-      // html: parseHtml(nombreTemplate, variables);
-    };
-
-    mg.messages().send(mail, (error, data) => {
-      res.status(400).json(data);
-    });
-  }
-
   @Post('validate')
   validateMail(@Body(new ValidationPipe()) mailValidate: MailValidate, @Res() res): void {
     this.mailService.validateMail(mailValidate, res);

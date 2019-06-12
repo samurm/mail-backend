@@ -1,5 +1,6 @@
 import {validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max, IsString, IsNotEmpty, IsOptional, IsArray} from 'class-validator';
 import { Expose } from 'class-transformer';
+import * as path from 'path';
 
 export class Mail {
     @IsString()
@@ -30,4 +31,7 @@ export class Mail {
     @IsOptional()
     @Expose({ name: 'h:X-Mailgun-Variables' })
     templateVariables: string;
+
+    @IsOptional()
+    attachment: any;
 }

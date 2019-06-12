@@ -11,6 +11,8 @@ import { MailGunAdapter } from '../adapters/mailgun.adapter';
 import { HttpExceptionListNameNotFound } from '../exceptions/listNameNotFound.exception';
 import { HttpExceptionMemberIsCreated } from '../exceptions/memberIsCreated.exception';
 import { HttpExceptionMemberDoesnotExist } from '../exceptions/memberDoesnotExist.exception';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class MailService {
@@ -82,9 +84,10 @@ export class MailService {
     }
 
     sendIndividualMail(@Body(new ValidationPipe()) mail: Mail, @Res() res): void {
+      mail.attachment = path.join(__dirname, mail.attachment);
 
       // mail['recipient-variables'] = mail.recipientVariables;
-      mail['h:X-Mailgun-Variables'] = mail.templateVariables;
+      // mail['h:X-Mailgun-Variables'] = mail.templateVariables;
       console.log(mail);
 
       this.mailAdapter.sendMail(mail).then(data => {
