@@ -2,6 +2,9 @@ import { Controller, Body, Res, Post, Put, Delete, ValidationPipe } from '@nestj
 import * as mailgun from 'mailgun-js';
 import { ListName } from '../dto/list.dto';
 import { CreateMember } from '../dto/createMember.dto';
+import { CreateMembers } from '../dto/createMembers.dto';
+import { UpdateMember } from '../dto/updateMember.dto';
+import { DeleteMember } from '../dto/deleteMember.dto';
 import { MailService } from '../services/mail.service';
 
 @Controller('list')
@@ -20,47 +23,23 @@ export class ListController {
       this.mailService.createMember(createMember, res);
     }
 
-    @Post('member/list')
-    addMembers(@Body() body, @Res() res): void {
-      const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});
-      const list = mg.lists(body.listName);
-      const membersList = JSON.parse(body.members);
-
-      list.members().add({members: membersList, subscribed: true}, (err, data) => {
-        res.status(400).json(data);
-      });
+    @Post('members/create')
+    addMembers(@Body(new ValidationPipe()) createMembers: CreateMembers, @Res() res): void {
+      this.mailService.createMembers(createMembers, res);
     }
 
-    @Post('member/read')
-    readMembers(@Body() body, @Res() res): void {
-      const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});
-      const list = mg.lists(body.listName);
-
-      list.members().list( (err, members) => {
-        res.status(400).json(members);
-      });
+    @Post('members')
+    readMembers(@Body(new ValidationPipe()) listName: ListName, @Res() res): void {
+      this.mailService.listMembers(listName, res);
     }
 
-    @Put('member')
-    updateMember(@Body() body, @Res() res): void {
-      const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});
-      const list = mg.lists(body.listName);
-      const member = body.member;
-      const newData = JSON.parse(body.data);
-
-      list.members(member).update(newData, (err, data) => {
-        res.status(400).json(data);
-      });
+    @Put('members')
+    updateMember(@Body(new ValidationPipe()) updateMember: UpdateMember, @Res() res): void {
+      this.mailService.updateMember(updateMember, res);
     }
 
     @Delete('member')
-    deleteMember(@Body() body, @Res() res): void {
-      const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});
-      const list = mg.lists(body.listName);
-      const member = body.member;
-
-      list.members(member).delete((err, data) => {
-        res.status(400).json(data);
-      });
+    deleteMember(@Body(new ValidationPipe()) deleteMember: DeleteMember, @Res() res): void {
+      this.mailService.deleteMember(deleteMember, res);
     }
 }

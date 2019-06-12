@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Body, Res } from '@nestjs/common';
+import { Controller, Body, Res, Post, Put, Delete, ValidationPipe } from '@nestjs/common';
 import * as mailgun from 'mailgun-js';
 import * as path from 'path';
 import { MailService } from '../services/mail.service';
+import { Mail } from '../dto/mail.dto';
+import { MailMultiple } from '../dto/mailMultiple.dto';
+import { MailValidate } from '../dto/mailValidate.dto';
 
 @Controller('mail')
 export class MailController {
@@ -9,19 +12,15 @@ export class MailController {
   constructor(private mailService: MailService) {
 
   }
-  @Post('send')
-  sendMail(@Body() body, @Res() res): void {
-    const mg = mailgun({apiKey: process.env.KEY, domain: process.env.DOMAIN});
-    const mail = {
-      from: 'me@samples.mailgun.org',
-      to: body.mails,
-      subject: 'Hello',
-      text: 'Testing some Mailgun awesomness!',
-    };
 
-    mg.messages().send(mail, (error, data) => {
-      res.status(400).json(data);
-    });
+  @Post('send/individual')
+  sendIndividualMail(@Body(new ValidationPipe()) mail: Mail, @Res() res): void {
+    this.mailService.sendIndividualMail(mail, res);
+  }
+
+  @Post('send/multiple')
+  sendMultipleMail(@Body(new ValidationPipe()) mailMultiple: MailMultiple, @Res() res): void {
+    this.mailService.sendMultipleMail(mailMultiple, res);
   }
 
   @Post('send/path')
@@ -43,16 +42,7 @@ export class MailController {
   }
 
   @Post('validate')
-  validateMail(@Body() body, @Res() res): void {
-    const mg = mailgun({apiKey: process.env.PUB_KEY, domain: process.env.DOMAIN});
-    const mail = body.mail;
-
-    mg.validate(mail, (err, data) => {
-      if (data && data.is_valid) {
-        res.status(400).send(true);
-      } else {
-        res.status(200).send(false);
-      }
-    });
+  validateMail(@Body(new ValidationPipe()) mailValidate: MailValidate, @Res() res): void {
+    this.mailService.validateMail(mailValidate, res);
   }
 }
