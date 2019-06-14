@@ -22,14 +22,8 @@ export class MailService {
         this.mailAdapter = new MailGunAdapter();
     }
 
-    readList(@Body(new ValidationPipe()) listName: ListName, @Res() res) {
-      const listInfo = this.mailAdapter.listInfo(listName.listName);
-
-      listInfo.then(data => {
-        res.status(200).json(data);
-      }).catch( () => {
-        throw new HttpExceptionListNameNotFound(res);
-      });
+    readList(@Body(new ValidationPipe()) listName: string): Promise<any> {
+      return this.mailAdapter.listInfo(listName);
     }
 
     createMember(@Body(new ValidationPipe()) createMember: CreateMember, @Res() res): void {

@@ -6,6 +6,7 @@ import { CreateMembers } from '../dto/createMembers.dto';
 import { UpdateMember } from '../dto/updateMember.dto';
 import { DeleteMember } from '../dto/deleteMember.dto';
 import { MailService } from '../services/mail.service';
+import { HttpExceptionListNameNotFound } from 'src/exceptions/listNameNotFound.exception';
 
 @Controller('list')
 export class ListController {
@@ -14,8 +15,12 @@ export class ListController {
     }
 
     @Post('read')
-    readList(@Body(new ValidationPipe()) listName: ListName, @Res() res): void {
-      this.mailService.readList(listName, res);
+    async readList(@Body(new ValidationPipe()) { listName }: ListName): Promise<any> {
+      try {
+        return await this.mailService.readList(listName);
+      } catch {
+        throw new HttpExceptionListNameNotFound(listName);
+      }
     }
 
     @Post('member/create')

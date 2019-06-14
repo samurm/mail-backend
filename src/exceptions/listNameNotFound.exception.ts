@@ -1,11 +1,11 @@
-import { Catch, HttpException, Res } from '@nestjs/common';
+import { Catch, HttpException, Res, ForbiddenException } from '@nestjs/common';
 import { HttpExceptionMail } from './email.exception';
 
 @Catch(HttpException)
-export class HttpExceptionListNameNotFound extends HttpExceptionMail {
+export class HttpExceptionListNameNotFound extends ForbiddenException {
 
-  constructor(@Res() res) {
-    super(res, 'ListName incorrect name', 401);
+  constructor(listName: string) {
+    super('ListName incorrect name:' + listName);
   }
 
 }
