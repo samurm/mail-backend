@@ -16,7 +16,8 @@
     "semicolon": [false, "never"],
     "align": [false, "parameters", "statements"],
     "no-unused-expression": false,
-    "object-literal-sort-keys": false
+    "object-literal-sort-keys": false,
+    "object-literal-shorthand": false
   },
   "rulesDirectory": []
 }

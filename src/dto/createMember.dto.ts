@@ -1,7 +1,10 @@
-import {validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max, IsString, IsNotEmpty} from 'class-validator';
-import { ListName } from './list.dto';
+import { ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { List } from './list.dto';
+import { Member } from './member.dto';
 
-export class CreateMember extends ListName {
-    @IsString()
-    readonly member: string;
+export class CreateMember extends List {
+    @ValidateNested()
+    @Type(() => Member)
+    readonly member: Member;
 }

@@ -1,5 +1,4 @@
 import { Catch, HttpException, Res, ForbiddenException } from '@nestjs/common';
-import { HttpExceptionMail } from './email.exception';
 
 @Catch(HttpException)
 export class HttpExceptionListNameNotFound extends ForbiddenException {

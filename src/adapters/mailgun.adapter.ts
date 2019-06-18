@@ -19,23 +19,23 @@ export class MailGunAdapter {
         return this.list(listName).info();
     }
 
-    createMember(listName, member) {
+    createMember( { listName, member } ) {
         return this.list(listName).members().create(member);
     }
 
-    createMembers(listName, membersList, subscribedMembers) {
-      return this.list(listName).members().add({members: membersList, subscribed: subscribedMembers});
+    createMembers( { listName, members, subscribed } ) {
+      return this.list(listName).members().add({members: members, subscribed: subscribed});
     }
 
     listMembers(listName) {
         return this.list(listName).members().list();
     }
 
-    updateMember(listName, member, updateMember) {
+    updateMember( { listName, member, updateMember } ) {
         return this.list(listName).members(member).update(updateMember);
     }
 
-    deleteMember(listName, member) {
+    deleteMember( { listName, member } ) {
         return this.list(listName).members(member).delete();
     }
 

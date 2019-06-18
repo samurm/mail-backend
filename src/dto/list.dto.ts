@@ -1,7 +1,6 @@
+import { IsString, IsNumber, IsNumberString } from 'class-validator';
 
-import {validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max, IsString, IsNotEmpty} from 'class-validator';
-
-export class ListName {
+export class List {
     @IsString()
     readonly listName: string;
 }

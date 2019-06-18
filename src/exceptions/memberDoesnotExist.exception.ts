@@ -1,11 +1,10 @@
 import { Catch, HttpException, Res } from '@nestjs/common';
-import { HttpExceptionMail } from './email.exception';
 
 @Catch(HttpException)
-export class HttpExceptionMemberDoesnotExist extends HttpExceptionMail {
+export class HttpExceptionMemberDoesnotExist extends HttpException {
 
-  constructor(@Res() res) {
-    super(res, 'Member does not exist', 403);
+  constructor(member) {
+    super('Member ' + member + ' does not exist', 403);
   }
 
 }

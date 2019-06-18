@@ -1,11 +1,12 @@
-import {validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max, IsString, IsNotEmpty, IsOptional, IsArray} from 'class-validator';
-import { Expose } from 'class-transformer';
+import { IsEmail, IsString, ValidateNested, IsOptional, IsJSON } from 'class-validator';
+import { Expose, Transform } from 'class-transformer';
+import * as path from 'path';
 
 export class Mail {
-    @IsString()
+    @IsEmail()
     readonly from: string;
 
-    @IsString()
+    @IsEmail()
     readonly to: string;
 
     @IsString()
@@ -24,13 +25,16 @@ export class Mail {
     readonly template: string;
 
     @IsOptional()
+    @ValidateNested()
     @Expose({ name: 'recipient-variables' })
     readonly recipientVariables: object;
 
     @IsOptional()
+    @IsJSON()
     @Expose({ name: 'h:X-Mailgun-Variables' })
     templateVariables: string;
 
     @IsOptional()
-    attachment: any;
+    @Transform((attachment: string) => path.join(__dirname + '/../data', attachment), {toPlainOnly: true})
+    attachment: string;
 }
