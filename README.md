@@ -1,34 +1,33 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Mail API
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Mail backend with NestJS that uses mailgun and is ready to use other APIs.
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project is a mail backend using the mailgun API.
+It is made so that you can add different mail APIs thanks to the adapter design pattern.
+Next I will put how to install it and what are its routes with the format and type of data that has to be sent to the backend and what it returns to you.
+
+## Prerequisites
+
+You need to have npm
+
+[npm](https://www.npmjs.com/get-npm)
+
+You need to have a mailgun account
+
+[mailgun](https://www.mailgun.com/)
 
 ## Installation
+
+Create file .env with mailgun keys
+
+```bash
+PORT=3000
+KEY=your-key
+PUB_KEY=you-pub-key
+DOMAIN=your-domain
+```
 
 ```bash
 $ npm install
@@ -47,29 +46,274 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Routes
 
-```bash
-# unit tests
-$ npm run test
+### List `/list`
 
-# e2e tests
-$ npm run test:e2e
+- Post `/read`
 
-# test coverage
-$ npm run test:cov
-```
+    - body = { "listName": "your-list-name" }
 
-## Support
+    - response = { "list": {
+        "access_level": "",
+        "address": "",
+        "created_at": "",
+        "description": "",
+        "members_count": 0,
+        "name": ""
+        }
+    }
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Post `/member/create`
 
-## Stay in touch
+    name, subscribed and vars are optionals
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+    - body = {
+        "listName": "your-list-name",
+        "member": {
+            "name": "Bob",
+            "subscribed": true,
+            "address": "bob@example.com",
+            "vars": {
+                "example": 0
+            }
+        }
+    }
 
-## License
+    - response = {
+        "member": {
+            "address": "bob@example.com",
+            "name": "Bob",
+            "subscribed": true,
+            "vars": {
+                "example": 0
+            }
+        },
+        "message": "Mailing list member has been created"
+    }
 
-  Nest is [MIT licensed](LICENSE).
+- Post `/members/create`
+
+    name, subscribed and vars are optionals
+
+    - body = {
+        "listName": "your-list-name",
+        "members": [
+            {
+                "name": "Bob",
+                "address": "bob@example.com",
+                "vars": {
+                    "example": 0
+                }
+            },
+            {
+                "name": "Bob2",
+                "address": "bob2@example.com",
+                "vars": {
+                    "age": 1
+                }
+            }
+        ],
+        "subscribed": true
+    }
+
+    - response = { "list": {
+            "access_level": "readonly",
+            "address": "your-list-name",
+            "created_at": "",
+            "description": "",
+            "members_count": 2,
+            "name": ""
+        },
+        "message": "Mailing list has been updated",
+        "task-id": ""
+    }
+
+- Post `/members`
+
+    - body = { "listName": "your-list-name" }
+
+    - response = { "items": [
+            {
+                "address": "bob@gmail.com",
+                "name": "Bob",
+                "subscribed": true,
+                "vars": {
+                    "example": 0
+                }
+            },
+            {
+                "address": "bob2@example.com",
+                "name": "Bob2",
+                "subscribed": true,
+                "vars": {
+                    "age": 1
+                }
+            }],
+        "total_count": 9
+    }
+
+- Put `/members`
+
+    updateMember can contain name, address, subscribed or vars
+
+    - body = {
+        "listName": "your-list-name",
+        "member": "bob@example.com",
+        "updateMember": {
+            "address": "bob@gmail.com"
+        }
+    }
+
+    - response = {
+        "member": {
+            "address": "bob@gmail.com",
+            "name": "Bob",
+            "subscribed": true,
+            "vars": {
+                "age": 22
+            }
+        },
+        "message": "Mailing list member has been updated"
+    }
+
+- Delete `/member`
+
+    - body = {
+        "listName": "your-list-name",
+        "member": "bob@example.com"
+    }
+
+    - response = {
+        "member": {
+            "address": "bob@example.com"
+        },
+        "message": "Mailing list member has been deleted"
+    }
+
+### Mail `/mail`
+
+- Post `/send/individual`
+    
+    You can send plane text, html or a name of a template of your API.
+
+    Then you can send variables in your html with 'recipient-variables' or 
+    send variables in your template with 'h:X-Mailgun-Variables'.
+
+    text, html, template, 'recipient-variables', 'h:X-Mailgun-Variables', attachment are optionals.
+
+    Example 1
+
+    - body = {
+        "from": "me@samples.mailgun.org",
+        "to": "bob@gmail.com",
+        "subject": "hi",
+        "text": "This is a message"
+    }
+
+    Example 2
+
+    - body = {
+        "from": "me@samples.mailgun.org",
+        "to": "bob@gmail.com",
+        "subject": "hi",
+        "recipient-variables": {
+            "bob@gmail.com" : {"id": "ABC123456789"}
+        },
+        "html": "<b>%recipient.id%</b>",
+        "attachment": "name-file"
+    }
+
+    Example 3
+
+    - body = {
+        "from": "me@samples.mailgun.org",
+        "to": "bob@gmail.com",
+        "subject": "hi",
+        "h:X-Mailgun-Variables": '{"body": "This is a message"}',
+        "template": "name-template",
+        "attachment": "name-file"
+    }
+
+    - response = {
+        "id": "",
+        "message": "Queued. Thank you."
+    }
+
+- Post `/send/multiple`
+
+    You have the same format as /send/individual, and u can add bcc or cc as array.
+
+    Example 1
+
+    - body = {
+        "from": "me@samples.mailgun.org",
+        "to": "bob@gmail.com",
+        "cc": ["bob@gmail.com", "bob2@gmail.com"],
+        "subject": "hi",
+        "recipient-variables": {
+            "bob@gmail.com" : {"id": "ABC123456789"},
+            "bob2@gmail.com" : {"id": "987654321CBA"}
+        },
+        "html": "<b>%recipient.id%</b>",
+        "attachment": "name-file"
+    }
+
+    Example 2
+
+    - body = {
+        "from": "me@samples.mailgun.org",
+        "to": "bob@gmail.com",
+        "bcc": ["bob@gmail.com", "bob2@gmail.com"],
+        "subject": "hi",
+        "recipient-variables": {
+            "bob@gmail.com" : {"id": "ABC123456789"},
+            "bob2@gmail.com" : {"id": "987654321CBA"}
+        },
+        "html": "<b>%recipient.id%</b>",
+        "attachment": "name-file"
+    }
+
+
+    - response = {
+        "id": "",
+        "message": "Queued. Thank you."
+    }
+
+- Post `/send/validate`
+
+    - body = {
+        "mail": "bob@gmail.com"
+    }
+
+    - response = {
+        "address": "bob@gmail.com",
+        "did_you_mean": null,
+        "is_disposable_address": false,
+        "is_role_address": false,
+        "is_valid": true,
+        "mailbox_verification": "true",
+        "parts": {
+            "display_name": null,
+            "domain": "gmail.com",
+            "local_part": "bob"
+        },
+        "reason": null
+    }
+
+### Upload Files `/`
+
+- Post `/upload`
+
+    - body = {
+        "file" : file
+    }
+
+    - response = {
+        "success": true
+    }
+
+## Built With
+
+* [NestJS](https://nestjs.com/) - The web framework used.
+* [Mailgun](https://www.mailgun.com/) - API Mail.
