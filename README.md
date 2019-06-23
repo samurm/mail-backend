@@ -1,4 +1,4 @@
-# Mail API
+# Mail Server
 
 Mail backend with NestJS that uses mailgun and is ready to use other APIs.
 
